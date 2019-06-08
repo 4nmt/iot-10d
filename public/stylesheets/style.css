@@ -1,8 +1,15 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+form.form-signin h1 {
+  font-weight: bold;
+}
+
+form.form-signin input {
+  margin: 8px 0;
 }
