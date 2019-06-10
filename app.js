@@ -5,6 +5,7 @@ var io = require('socket.io')(server);
 
 var path = require('path');
 var logger = require('morgan');
+var db = require('./db');
 
 const PORT = 3484;
 var LED = require('./communicate/led');
@@ -47,25 +48,44 @@ io.on('connection', function (socket) {
     console.log("recv LED", status)
   })
 
-  socket.on('SCAN_STATUS', function (status) {
+  socket.on('SCAN_STATUS', async function (status) {
     let data = status["data"];
-    let arrs = [[181, 57, 84, 99, 187]]
-    for (i in arrs) {
-      console.log(arrs[i]);
-      if (arrs[i].length == data.length
-        && arrs[i].every(function (u, i) {
-          return u == data[i];
-        })
-      ) {
+
+    let users = await db.collection('users').get();
+    let arrs_fixed = users.docs.map(function (x) {
+      return {
+        id: x.data().id.toString().split('-'),
+        name: x.data().name,
+        isAccepted: x.data().isAccepted,
+      };
+    });
+
+    for (i in arrs_fixed) {
+      if(arrs_fixed[i].id.length == data.length && arrs_fixed[i].id.every((u, i) => (u == data[i].toString()))) {
         ledBlue.turnOn();
         ledRed.turnOff();
-        lcd.send("Door open");
+        lcd.send(`Hi, ${arrs_fixed[i].name}`);
         return;
       }
     }
+
+    // let arrs = [[181, 57, 84, 99, 187]]
+    // for (i in arrs) {
+
+    //   console.log(arrs[i]);
+
+    //   if (arrs[i].length == data.length && arrs[i].every((u, i) => u == data[i])) {
+    //     ledBlue.turnOn();
+    //     ledRed.turnOff();
+    //     lcd.send("Door open");
+    //     return;
+    //   }
+    // }
+
     ledBlue.turnOff();
     ledRed.turnOn();
-    lcd.send("Error card");
+    lcd.send("Failed!");
+
     // Nhận được thì in ra thôi hihi.
     console.log("SCAN_STATUS", JSON.stringify(status))
   })
