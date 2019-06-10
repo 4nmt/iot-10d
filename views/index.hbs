@@ -1,12 +1,16 @@
 <div class="d-flex justify-content-center align-items-center" style="widht:800px">
-    <form class="form-signin" action="/users" method="POST" >
+    <form class="form-signin" action="/auth" method="POST" >
         <img class="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">USER INFORMATION</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Đăng nhập Trang quản lý</h1>
         <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="text" name="name" id="name" class="form-control" placeholder="Email address" required autofocus>
+        <input type="text" name="username" id="name" class="form-control" placeholder="Email address" required autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Đăng nhập</button>
     </form>
 </div>
-
+{{#if isLoginFailed}}
+<div>
+    <p class="auth-result">Thông tin tài khoản đăng nhập không chính xác</p>
+</div>
+{{/if}}

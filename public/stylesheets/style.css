@@ -13,3 +13,9 @@ form.form-signin h1 {
 form.form-signin input {
   margin: 8px 0;
 }
+
+p.auth-result {
+  margin-top: 32px;
+  text-align: center;
+  color: red;
+}

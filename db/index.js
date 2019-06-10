@@ -1,12 +1,13 @@
-var mongoose = require('mongoose');
+var firebase = require('firebase');
 
-// Connect MongoDB
-mongoose.set('useCreateIndex', true)
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/iot", { useNewUrlParser: true })
-const db = mongoose.connection
-db.on('open', () => {
-  console.log('DB connected')
-})
-db.on('error', (err) => console.log(err));
+const firebaseConfig = {
+  apiKey: "AIzaSyBWwH4qOAACOMGiaLh7fK_ufiBbd3dNheI",
+  authDomain: "iot-95d.firebaseapp.com",
+  databaseURL: "https://iot-95d.firebaseio.com",
+  projectId: "iot-95d",
+  storageBucket: "iot-95d.appspot.com",
+  messagingSenderId: "394113193683",
+  appId: "1:394113193683:web:fa9c5fb75839273b"
+};
 
-module.exports = db;
+module.exports = firebase.initializeApp(firebaseConfig).firestore();
