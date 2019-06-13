@@ -19,3 +19,41 @@ p.auth-result {
   text-align: center;
   color: red;
 }
+
+.app {
+  width: 100%;
+}
+
+.app-body {
+  padding: 32px 0;
+}
+
+#form-add-user {
+  margin-bottom: 24px;
+}
+
+.columns-contain-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.columns-contain-buttons button {
+  width: 44%;
+}
+
+.container > .container-left {
+  float: left;
+  width: 55%;
+  height: 640px;
+  overflow: auto;
+}
+
+.container-left table {
+  font-size: 0.8em;
+}
+
+.container > .container-right {
+  float: right;
+  width: 43%;
+}

@@ -1,0 +1,87 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+
+<div class="app">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/home">iHome</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Quản lý User</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Thống kê</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Điều khiển từ xa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/" style="font-weight: bold; color: red">Đăng xuất</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="app-body">
+        <div class="container">
+            <div class="container-left">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 35%">Thời gian</th>
+                            <th scope="col" style="width: 35%">Họ tên</th>
+                            <th scope="col" style="width: 30%">Mã thẻ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="container-right">
+                [Chart]
+            </div>
+            <div styl="clear:both"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    db.collection('history').orderBy('time', 'desc').onSnapshot((querySnapshot) => {
+        let history = querySnapshot.docs.map(function (doc) {
+            return {
+                documentId: doc.id,
+                id: doc.data().id,
+                name: doc.data().name,
+                time: doc.data().time,
+            }
+        });
+
+        let tableBody = document.createElement('tbody');
+        tableBody.setAttribute("id", "history-table-body");
+
+        for (let i = 0; i < history.length; i++) {
+            let row = document.createElement('tr');
+
+            let col1 = document.createElement('td');
+            var day = moment.unix(history[i].time.seconds);
+            col1.innerHTML = day.toString();
+            let col2 = document.createElement('td');
+            col2.innerHTML = history[i].name;
+
+            let col3 = document.createElement('td');
+            col3.innerHTML = history[i].id;
+
+            row.append(col1, col2, col3);
+            tableBody.append(row);
+        }
+
+        document.getElementById("history-table-body").replaceWith(tableBody);
+    });
+</script>

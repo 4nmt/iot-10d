@@ -15,7 +15,7 @@ var cookieParser = require('cookie-parser');
 var loginRouter = require('./routes/login');
 var homeRouter = require('./routes/home');
 var authRouter = require('./routes/auth');
-var openRouter = require('./routes/open');
+var historyRouter = require('./routes/history');
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', loginRouter);
 app.use('/home', homeRouter);
 app.use('/auth', authRouter);
-app.use('/open', openRouter);
+app.use('/history', historyRouter);
 
 // Socket handling
 io.on('connection', function (socket) {
@@ -61,10 +61,17 @@ io.on('connection', function (socket) {
     });
 
     for (i in arrs_fixed) {
-      if(arrs_fixed[i].id.length == data.length && arrs_fixed[i].id.every((u, i) => (u == data[i].toString()))) {
+      if (arrs_fixed[i].id.length == data.length && arrs_fixed[i].id.every((u, i) => (u == data[i].toString()))) {
         ledBlue.turnOn();
         ledRed.turnOff();
         lcd.send(`Hi, ${arrs_fixed[i].name}`);
+
+        db.collection('history').add({
+          id: arrs_fixed[i].id,
+          name: arrs_fixed[i].name,
+          time: Math.floor(Date.now() / 1000),
+        });
+
         return;
       }
     }

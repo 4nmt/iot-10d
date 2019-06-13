@@ -1,17 +1,146 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<div class="app">
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Users <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-    </ul>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/home">iHome</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Quản lý User</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/history">Thống kê</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Điều khiển từ xa</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/" style="font-weight: bold; color: red">Đăng xuất</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="app-body">
+    <div class="container">
+      <form class="form-inline" id="form-add-user">
+        <div class="form-group mx-sm-3 mb-2">
+          <label for="inputPassword2" class="sr-only">Mã thẻ</label>
+          <input type="text" class="form-control" id="inputCardId" name="inputCardId" placeholder="Mã thẻ">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+          <label for="inputPassword2" class="sr-only">Họ tên</label>
+          <input type="text" class="form-control" id="inputCardName" name="inputCardName" placeholder="Họ tên">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Thêm User</button>
+      </form>
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 10%">#</th>
+            <th scope="col" style="width: 25%">Họ tên</th>
+            <th scope="col" style="width: 20%">Mã thẻ</th>
+            <th scope="col" style="width: 20%">Tình trạng</th>
+            <th scrop="col" style="width: 25">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="users-table-body">
+        </tbody>
+      </table>
+    </div>
   </div>
-</nav>
+
+</div>
+
+<script>
+  document.getElementById("form-add-user").addEventListener('submit', function (e) {
+    e.preventDefault();
+    let cardId = document.getElementById("inputCardId");
+    let cardName = document.getElementById("inputCardName");
+
+    if (confirm(`Bạn có muốn thêm mã thẻ ${cardId.value} tương ứng với tên ${cardName.value} vào danh sách người dùng không?`)) {
+      db.collection('users').add({
+        id: cardId.value,
+        name: cardName.value,
+        isAccepted: true,
+      });
+    }
+
+    cardId.value = "";
+    cardName.value = "";
+  });
+
+  db.collection('users').orderBy('name').onSnapshot((querySnapshot) => {
+    let users = querySnapshot.docs.map(function (doc) {
+      return {
+        documentId: doc.id,
+        cardId: doc.data().id,
+        cardName: doc.data().name,
+        cardStatus: doc.data().isAccepted,
+      }
+    });
+
+    let tableBody = document.createElement('tbody');
+    tableBody.setAttribute("id", "users-table-body");
+
+    for (let i = 0; i < users.length; i++) {
+      let row = document.createElement('tr');
+
+      let col1 = document.createElement('th');
+      col1.setAttribute('scrope', 'row');
+      col1.innerHTML = i + 1;
+
+      let col2 = document.createElement('td');
+      col2.innerHTML = users[i].cardName;
+
+      let col3 = document.createElement('td');
+      col3.innerHTML = users[i].cardId;
+
+      let col4 = document.createElement('td');
+      col4.innerHTML = users[i].cardStatus ? 'Đang hoạt động' : 'Đã bị khóa';
+
+      let col5 = document.createElement('td');
+      let buttonBlock = document.createElement('button');
+      let buttonDelete = document.createElement('button');
+
+      if (users[i].cardStatus) {
+        buttonBlock.setAttribute("type", "button");
+        buttonBlock.setAttribute("class", "btn btn-warning");
+        buttonBlock.innerHTML = "Khóa";
+      } else {
+        buttonBlock.setAttribute("type", "button");
+        buttonBlock.setAttribute("class", "btn btn-success");
+        buttonBlock.innerHTML = "Mở khóa";
+      }
+
+      buttonBlock.addEventListener('click', function (e) {
+        db.collection('users').doc(users[i].documentId).update({
+          isAccepted: !users[i].cardStatus
+        });
+      })
+
+      buttonDelete.setAttribute("type", "button");
+      buttonDelete.setAttribute('class', 'btn btn-danger');
+      buttonDelete.innerHTML = "Xóa";
+
+      buttonDelete.addEventListener('click', function (e) {
+        let result = confirm(`Bạn có muốn xóa ${users[i].cardName} khỏi danh sách hiện tại?`);
+        if (result) {
+          db.collection('users').doc(users[i].documentId).delete();
+        }
+      });
+
+      col5.setAttribute("class", "columns-contain-buttons");
+      col5.append(buttonBlock, buttonDelete);
+
+      row.append(col1, col2, col3, col4, col5);
+      tableBody.append(row);
+    }
+
+    document.getElementById("users-table-body").replaceWith(tableBody);
+  });
+</script>
