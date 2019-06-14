@@ -66,6 +66,13 @@ io.on('connection', function (socket) {
 
     for (i in arrs_fixed) {
       if (arrs_fixed[i].id.length == data.length && arrs_fixed[i].id.every((u, i) => (u == data[i].toString()))) {
+        if(!arrs_fixed[i].isAccepted) {
+          ledBlue.turnOff();
+          ledRed.turnOn();
+          lcd.send(`Sorry ${arrs_fixed[i].name},`, `You're blocked`);
+          return;
+        }
+
         ledBlue.turnOn();
         ledRed.turnOff();
         lcd.send('Xin chao,', arrs_fixed[i].name);

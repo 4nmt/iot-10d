@@ -44,7 +44,7 @@
                 </table>
             </div>
             <div class="container-right">
-                [Chart]
+                <canvas id="myChart" width="300" height="300"></canvas>
             </div>
             <div styl="clear:both"></div>
         </div>
@@ -52,8 +52,46 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+
 <script>
     db.collection('history').orderBy('time', 'desc').onSnapshot((querySnapshot) => {
+        let myMap = {};
+        let myMapName = {};
+
+        for (let i = 0; i < querySnapshot.docs.length; i++) {
+            let tempId = querySnapshot.docs[i].data().id;
+            if (tempId in myMap) {
+                myMap[tempId] = myMap[tempId] + 1;
+            } else {
+                myMap[tempId] = 0;
+            }
+
+            myMapName[tempId] = querySnapshot.docs[i].data().name;
+        }
+
+        let dataX = [];
+        let labelX = [];
+
+        for (const [id, number] of Object.entries(myMap)) {
+            dataX.push(number);
+            labelX.push(myMapName[id]);
+        }
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: dataX,
+                }],
+                labels: labelX
+            },
+            options: {
+                responsive: true
+            }
+        });
+
         let history = querySnapshot.docs.map(function (doc) {
             return {
                 documentId: doc.id,
