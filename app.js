@@ -40,7 +40,7 @@ io.on('connection', function (socket) {
   var ledBlue = new LED(4, socket);
   var lcd = new LCD(socket);
   var lock = false;
-  lcd.send("Hello word");
+  lcd.send("Hello word", '');
 
   // Khi nhận được lệnh LED_STATUS
   socket.on('LED_STATUS', function (status) {
@@ -64,12 +64,12 @@ io.on('connection', function (socket) {
       if (arrs_fixed[i].id.length == data.length && arrs_fixed[i].id.every((u, i) => (u == data[i].toString()))) {
         ledBlue.turnOn();
         ledRed.turnOff();
-        lcd.send(`Hi, ${arrs_fixed[i].name}`);
+        lcd.send('Xin chao,', arrs_fixed[i].name);
 
         db.collection('history').add({
-          id: arrs_fixed[i].id,
+          id: arrs_fixed[i].id.join('-'),
           name: arrs_fixed[i].name,
-          time: Math.floor(Date.now() / 1000),
+          time: Date.now(),
         });
 
         return;
@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
 
     ledBlue.turnOff();
     ledRed.turnOn();
-    lcd.send("Failed!");
+    lcd.send('Failed!', 'Who are you?');
 
     // Nhận được thì in ra thôi hihi.
     console.log("SCAN_STATUS", JSON.stringify(status))
