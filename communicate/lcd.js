@@ -3,9 +3,10 @@ class LCD {
         this.socket = socket;
     }
 
-    send(message){
+    send(message1, message2){
         var json = {
-			"message": message, //có một phần tử là "led", phần tử này chứa giá trị của mảng led
+			"message-1": message1,
+			"message-2": message2
         }
         this.socket.emit("LCD", json)
     }
