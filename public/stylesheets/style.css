@@ -57,3 +57,8 @@ p.auth-result {
   float: right;
   width: 43%;
 }
+
+#free-time-button {
+  margin-top: 16px;
+  padding: 12px 24px;
+}

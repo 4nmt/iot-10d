@@ -1,0 +1,81 @@
+<div class="app">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/home">iHome</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/home">Quản lý User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/history">Thống kê</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Điều khiển từ xa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/" style="font-weight: bold; color: red">Đăng xuất</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="app-body">
+        <div class="container">
+            <div>
+                <label for="customRange3">Chọn khoảng thời gian mở cửa tự do:</label>
+                <span id="time-show" style="float: right; font-weight: bold">30 s</span>
+            </div>
+            <input type="range" class="custom-range" min="0" max="120" value="30" step="5" id="free-time-range">
+            <div style="width: 100%; text-align: center">
+                <button id="free-time-button" type="button" class="btn btn-primary">Mở tự do</button>
+            </div>
+        </div>
+        <div id="div-info" style="margin-top: 32px; width: 100%; text-align: center; visibility: hidden">
+            <p style="color: red; font-weight: bold; font-size: 1.5em">Mở cửa tự do trong <span
+                    id="time-countdown"></span> giây ...</p>
+            <img src="https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="loading...">
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+    $("#free-time-range").change(function () {
+        let timeSelected = $(this).val();
+        document.getElementById("time-show").innerText = timeSelected + ' s';
+    });
+
+    $("#free-time-button").click(function () {
+        let now = $("#free-time-range").val();
+
+        $("#time-countdown").text(now);
+        $("#div-info").css("visibility", "visible");
+        $(this).attr('disabled', true);
+        $("#free-time-range").attr('disabled', true);
+
+        jQuery.get('/free', {time: now}, function(data, status) {
+            console.log(data);
+        }, 'json');
+        
+        let theLoop;
+
+        theLoop = setInterval(function () {
+            now = now - 1;
+            $("#time-countdown").text(now);
+            if (now == 0) {
+                $("#time-countdown").text(now);
+                $("#div-info").css("visibility", "hidden");
+                $("#free-time-button").removeAttr('disabled');
+                $("#free-time-range").removeAttr('disabled');
+                clearInterval(theLoop);
+            };
+        }, 1000);
+    });
+</script>

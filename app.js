@@ -16,6 +16,8 @@ var loginRouter = require('./routes/login');
 var homeRouter = require('./routes/home');
 var authRouter = require('./routes/auth');
 var historyRouter = require('./routes/history');
+var freeRouter = require('./routes/free');
+var controlRouter = require('./routes/control');
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +32,8 @@ app.use('/', loginRouter);
 app.use('/home', homeRouter);
 app.use('/auth', authRouter);
 app.use('/history', historyRouter);
+app.use('/control', controlRouter);
+app.use('/free', freeRouter);
 
 // Socket handling
 io.on('connection', function (socket) {
@@ -118,3 +122,5 @@ app.use(function (err, req, res, next) {
 server.listen(PORT, function () {
   console.log(`Server is running on port ${PORT} ...`);
 });
+
+module.exports.io = io;
