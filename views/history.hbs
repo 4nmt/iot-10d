@@ -70,7 +70,7 @@
             let row = document.createElement('tr');
 
             let col1 = document.createElement('td');
-            var day = moment.unix(history[i].time.seconds);
+            var day = moment.unix(Math.floor(history[i].time / 1000));
             col1.innerHTML = day.toString();
             let col2 = document.createElement('td');
             col2.innerHTML = history[i].name;
