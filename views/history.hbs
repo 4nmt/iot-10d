@@ -72,11 +72,26 @@
 
         let dataX = [];
         let labelX = [];
+        let colorX = [];
 
         for (const [id, number] of Object.entries(myMap)) {
             dataX.push(number);
             labelX.push(myMapName[id]);
+
+            let hashId = id.split('-').reduce(function(total, sum) {
+                return parseInt(total) + parseInt(sum);
+            }, 0);
+
+            hashId *= 37;
+
+            let r = (hashId & 0xFF0000) >>16;
+            let g = (hashId & 0x00FF00) >> 8;
+            let b = (hashId & 0x0000FF);
+
+            colorX.push(`rgb(${r},${g},${b})`);
         }
+
+        console.log(colorX);
 
         let ctx = document.getElementById('myChart').getContext('2d');
         let myPieChart = new Chart(ctx, {
@@ -84,6 +99,7 @@
             data: {
                 datasets: [{
                     data: dataX,
+                    backgroundColor: colorX
                 }],
                 labels: labelX
             },
